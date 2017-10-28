@@ -1,0 +1,19 @@
+{
+    "name": "Quagga Router",
+    "category": "router",
+    "description": "",
+    "vendor_name": "Lucas Arbiza",
+    "vendor_url": "https://hub.docker.com/r/arbiza/quagga/",
+    "documentation_url": "https://bitbucket.org/arbiza/quagga-docker",
+    "product_name": "Quagga on Docker",
+    "registry_version": 1,
+    "status": "stable",
+    "maintainer": "Lucas Arbiza",
+    "maintainer_email": "lucas@arbiza.com.br",
+    "usage": "Use the 'Edit Configuration' option to set network addresses according to your preferences. It's a Debian image and can be configured in the same way as a Debian host.",
+    "symbol": "router.svg",
+    "docker": {
+        "adapters": 8,
+        "image": "arbiza/quagga:latest",
+    }
+}
