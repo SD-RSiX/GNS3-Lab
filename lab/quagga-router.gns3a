@@ -6,7 +6,7 @@
     "vendor_url": "https://hub.docker.com/r/arbiza/quagga/",
     "documentation_url": "https://bitbucket.org/arbiza/quagga-docker",
     "product_name": "Quagga on Docker",
-    "registry_version": 1,
+    "registry_version": 2,
     "status": "stable",
     "maintainer": "Lucas Arbiza",
     "maintainer_email": "lucas@arbiza.com.br",
