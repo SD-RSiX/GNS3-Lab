@@ -1,7 +1,7 @@
 {
     "name": "Quagga Router",
     "category": "router",
-    "description": "",
+    "description": "It is a Quagga running on Docker.",
     "vendor_name": "Lucas Arbiza",
     "vendor_url": "https://hub.docker.com/r/arbiza/quagga/",
     "documentation_url": "https://bitbucket.org/arbiza/quagga-docker",
@@ -14,6 +14,6 @@
     "symbol": "router.svg",
     "docker": {
         "adapters": 8,
-        "image": "arbiza/quagga:latest",
+        "image": "arbiza/quagga:latest"
     }
 }
