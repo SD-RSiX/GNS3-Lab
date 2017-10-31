@@ -9,9 +9,11 @@ Before to run, you need to build the Lab.
 The detailed information and instructions are in the README.md file into the __lab__ directory.
 
 
-## Accessing switches
+## OpenFlow switches (Open vSwitch)
 
-Once the Lab is running, double click in any switch to open its console.
+
+
+In order to access the switches console, once the Lab is running, double click in any switch.
 
 Some of the commands available are the following:
 
