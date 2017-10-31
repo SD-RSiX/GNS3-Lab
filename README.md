@@ -4,7 +4,9 @@
 
 # Running
 
-Before to run, build the Lab. The detailed information and instructions are in the README.md file into the __lab__ directory.
+Before to run, you need to build the Lab.
+
+The detailed information and instructions are in the README.md file into the __lab__ directory.
 
 
 ## Accessing switches
@@ -20,3 +22,6 @@ Some of the commands available are the following:
 
 
 ## Accessing routers
+
+
+ovs-vsctl set-fail-mode ovs-switch standalone
