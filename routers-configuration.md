@@ -10,7 +10,7 @@ At Brazilians IX VLANs 10 and 20 are used in production environment to connect a
 Address blocks in use are:
 
  * VLAN 10 (and 101, 102, 103): 200.219.143.XXX/24 - _The addresses are defined by RSiX_
- * VLAN 20 (and 201, 202, 203): 2001:12F8:0:6::<ASN>/64 - _The host identifier part of IPv6 address uses the ASN; see the templates below for 16 - 32 bits numbers:_
+ * VLAN 20 (and 201, 202, 203): 2001:12F8:0:6::<ASN>/64 - _The interface identifier of the IPv6 address uses the ASN; see the templates below for 16 - 32 bits numbers:_
     * 2001:12F8:0:6::XXXX
     * 2001:12F8:0:6::X:XXXX
     * 2001:12F8:0:6::XX:XXXX
@@ -83,78 +83,37 @@ ip routing
 ipv6 unicast-routing
 ```
 
+## Peering configuration in Route Server
 
-# Route server - Adding a new AS
-
-router bgp 26162
- no synchronization
- bgp router-id 200.219.143.254
- bgp log-neighbor-changes
- neighbor RSiX-v4 peer-group
- neighbor RSiX-v4 soft-reconfiguration inbound
- neighbor RSiX-v4 prefix-list ATM-prefix-limit in
- neighbor RSiX-v4 maximum-prefix 500 restart 10
- neighbor RSiX-v4 filter-list 1 out
- neighbor RSiX-v4 next-hop-unchanged
- neighbor RSiX-v6 peer-group
- neighbor RSiX-v6 soft-reconfiguration inbound
- neighbor RSiX-v6 prefix-list ATM-prefix-limit in
- neighbor RSiX-v6 maximum-prefix 500 restart 10
- neighbor RSiX-v6 filter-list 1 out
- neighbor RSiX-v6 next-hop-unchanged
- no auto-summary
-!
-ip as-path access-list 1 permit ^2716_
-ip as-path access-list 1 permit ^1916_
-!
-ip prefix-list ATM-prefix-limit seq 10 deny 0.0.0.0/0
-ip prefix-list ATM-prefix-limit seq 20 deny 200.219.143.0/24
-ip prefix-list ATM-prefix-limit seq 30 permit 0.0.0.0/0 le 29
-!
-ipv6 prefix-list ATM-6-prefix-limit seq 10 deny ::0/0
-ipv6 prefix-list ATM-6-prefix-limit seq 20 deny  2001:12F8:0:6::/64
-ipv6 prefix-list ATM-6-prefix-limit seq 30 permit ::0/0 le
-!
-
-
-ip as-path access-list 1 permit ^2716_
+```
+ip as-path access-list 1 permit ^ANS_
 
 router bgp 26162
  address-family ipv4
-  neighbor 200.219.143.1 remote-as 2716
-  neighbor 200.219.143.1 description === Rede Tche ===
-  neighbor 200.219.143.1 peer-group RSiX-v4
+  neighbor 200.219.143.XXX remote-as ASN
+  neighbor 200.219.143.XXX description === <AS Name> ===
+  neighbor 200.219.143.XXX peer-group RSiX-v4
   exit
  address-family ipv6
-  neighbor 2001:12F8:0:6::2716 remote-as 2716
-  neighbor 2001:12F8:0:6::2716 description === Rede Tche ===
-  neighbor 2001:12F8:0:6::2716 peer-group RSiX-v6
+  neighbor 2001:12F8:0:6::<AS Number as Interface ID> remote-as ASN
+  neighbor 2001:12F8:0:6::<AS Number as Interface ID> description === <AS Name> ===
+  neighbor 2001:12F8:0:6::<AS Number as Interface ID> peer-group RSiX-v6
   end
 !
-
-
-
-
- neighbor 200.219.143.1 attribute-unchanged as-path next-hop
-
- neighbor 2001:12f8:0:6::2716 remote-as 2716
- no neighbor 2001:12f8:0:6::2716 activate
+write memory
 !
- address-family ipv6
- neighbor 2001:12f8:0:6::2716 activate
- neighbor 2001:12f8:0:6::2716 soft-reconfiguration inbound
- neighbor 2001:12f8:0:6::2716 maximum-prefix 500 restart 10
- neighbor 2001:12f8:0:6::2716 attribute-unchanged as-path next-hop
-  exit-address-family
+```
+
+## Peering in ASes Routers
+
+### Cisco IOS Routers
+
+```
 !
-ip prefix-list ATM-prefix-limit description ====Limita prefixos menores ou igual a /29====
-ip prefix-list ATM-prefix-limit seq 10 deny 0.0.0.0/0
-ip prefix-list ATM-prefix-limit seq 20 deny 200.219.143.0/24
-ip prefix-list ATM-prefix-limit seq 25 deny 200.236.32.0/21
-ip prefix-list ATM-prefix-limit seq 30 permit 200.236.32.0/19 ge 29
-ip prefix-list ATM-prefix-limit seq 40 permit 0.0.0.0/0 le 29
+conf t
 !
-ip as-path access-list 32 permit .*
-ip as-path access-list 69 deny .*
-ip as-path access-list ATM permit ^2716_
+ip routing
+ipv6 unicast-routing
 !
+
+```
