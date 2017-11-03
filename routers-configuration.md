@@ -87,17 +87,25 @@ ipv6 unicast-routing
 
 ```
 ip as-path access-list 1 permit ^ANS_
-
+!
 router bgp 26162
+!
+ neighbor 200.219.143.XXX remote-as ASN
+ neighbor 200.219.143.XXX description === <AS Name> ===
+ neighbor 200.219.143.XXX peer-group RSiX-v4
+ neighbor 2001:12F8:0:6::<AS Number as Interface ID> remote-as ASN
+ neighbor 2001:12F8:0:6::<AS Number as Interface ID> description === <AS Name> ===
+ neighbor 2001:12F8:0:6::<AS Number as Interface ID> peer-group RSiX-v6
+ !
  address-family ipv4
-  neighbor 200.219.143.XXX remote-as ASN
-  neighbor 200.219.143.XXX description === <AS Name> ===
-  neighbor 200.219.143.XXX peer-group RSiX-v4
-  exit
+  no neighbor 2001:12F8:0:6::<AS Number as Interface ID> activate
+  neighbor 200.219.143.XXX activate
+  exit-address-family
+ !
  address-family ipv6
-  neighbor 2001:12F8:0:6::<AS Number as Interface ID> remote-as ASN
-  neighbor 2001:12F8:0:6::<AS Number as Interface ID> description === <AS Name> ===
-  neighbor 2001:12F8:0:6::<AS Number as Interface ID> peer-group RSiX-v6
+  neighbor 2001:12F8:0:6::<AS Number as Interface ID> activate
+  exit-address-family
+ !
   end
 !
 write memory
