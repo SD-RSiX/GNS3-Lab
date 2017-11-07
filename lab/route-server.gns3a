@@ -1,0 +1,19 @@
+{
+    "name": "Route Server",
+    "category": "router",
+    "description": "It is a Quagga running on Docker.",
+    "vendor_name": "Lucas Arbiza",
+    "vendor_url": "https://arbiza.com.br",
+    "documentation_url": "https://bitbucket.org/arbiza/quagga-docker",
+    "product_name": "Route Server on Docker",
+    "registry_version": 3,
+    "status": "stable",
+    "maintainer": "Lucas Arbiza",
+    "maintainer_email": "lucas@arbiza.com.br",
+    "usage": "See the lab documentation in the README.md file in the 'lab' directory.",
+    "symbol": "router.svg",
+    "docker": {
+        "adapters": 4,
+        "image": "sd-rsix/route-server:latest"
+    }
+}

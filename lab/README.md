@@ -11,11 +11,13 @@ The Lab is based on GNS3, Docker, [Ryu SDN Controller](https://osrg.github.io/ry
 ## Building Docker images
 
 ```
+## Run the following commands in the same directory where this file is.
+
 ## Route Server
-docker build -t route-server:latest containers/route-server
+docker build -t sd-rsix/route-server:latest containers-src/route-server
 
 ## Quarentine Route Server
-docker build -t quarentine:latest containers/quarentine
+docker build -t sd-rsix/quarentine:latest containers/quarentine
 ```
 
 
