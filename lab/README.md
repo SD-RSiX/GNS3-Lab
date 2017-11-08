@@ -34,3 +34,8 @@ After installing GNS3 and Docker, open GNS3 and import Open vSwitch and iX Quagg
 
 
 After importing, click in any of the Cisco IOS Routers (e.g. Router Server) and select _Auto Idle-PC_ in order to reduce the burden of the Lab in your computer.
+
+
+## Ryu controller
+
+[Ryu Docker container](https://store.docker.com/community/images/osrg/ryu)
