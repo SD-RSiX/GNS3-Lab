@@ -32,8 +32,33 @@ After installing GNS3 and Docker, open GNS3 and import all the _.gns3a_ files in
 
 ### Importing GNS3 project
 
-
 After importing, click in any of the Cisco IOS Routers (e.g. Router Server) and select _Auto Idle-PC_ in order to reduce the burden of the Lab in your computer.
+
+
+## Connecting Open vSwitches to the Docker network
+
+At this point, you hare a GNS3 project ready to run. Although, the Open vSwitches need a connection with a Docker network to reach the controller. First, create a Docker network exclusive to this lab running the command below:
+
+```
+docker network create --subnet=10.10.10.0/24 --gateway=10.10.10.1 sd_rsix
+```
+
+List the Docker networks to get the ID of the network created:
+
+```
+$ docker network ls
+NETWORK ID          NAME                DRIVER              SCOPE
+c33df49ae2e1        bridge              bridge              local
+4611cdd66e56        host                host                local
+99686584619c        none                null                local
+eba863006310        sd_rsix             bridge              local    <<-
+```
+
+In the example above, the Network ID of the network __sd_rsix__ is __eba863006310__
+
+In GNS3, go to _Edit_ > _Preferences_; go to _Built-in_ and select _Cloud nodes_. Create a new cloud by clicking _new_ and name it as you want and click _Finish_. Select the cloud node you just created and click _Edit_. In the new window, in the _Ethernet interfaces_ tab, check _Show special Ethernet interfaces_, then select the interface of the network __sd_rsix__ by its ID (__br-eba863006310__) and click _Add_. Click _OK_ and _OK_.
+
+Back to the project window, add the cloud node you created (You must have given a name to it) to the project and connect it to _Management-SW_. The _Management-SW_ connects all the Open vSwitches by their management interfaces.
 
 
 ## Ryu controller
