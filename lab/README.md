@@ -25,7 +25,7 @@ docker build -t sd-rsix/quarentine:latest containers/quarentine
 
 ### Importing Docker images to GNS3
 
-After installing GNS3 and Docker, open GNS3 and import Open vSwitch and iX Quagga Router images throught __File__ > __Import Appliance__ and select the _.gns3a_ files into the _lab_ directory of this project (the images are imported individually) and install the images in GNS3 according your preferences.
+After installing GNS3 and Docker, open GNS3 and import all the _.gns3a_ files in the _GNS3-import_ folder (one by one). You may change some options in the importing dialog according to your preferences.
 
 
 ### Importing Cisco IOS image
