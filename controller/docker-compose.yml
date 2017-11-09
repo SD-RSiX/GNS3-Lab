@@ -1,8 +1,8 @@
 version: '3'
 services:
-    web:
+    ryu:
         image: "osrg/ryu"
         ports:
-            - "5000:5000"
+            - "6633:6633"
         volumes:
             - .:/src
