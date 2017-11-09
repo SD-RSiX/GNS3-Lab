@@ -10,6 +10,17 @@ The Lab is based on GNS3, Docker, [Ryu SDN Controller](https://osrg.github.io/ry
 
 ## Building Docker images
 
+### Open vSwitch
+
+For this Lab we had to change the GNS3 Open vSwitch Docker image in order to set the controller to 10.10.10.254:6633 and the fail mode to secure. With this changes the switches will not forward packets unless they are connected to a controller.
+
+Run the following command to build Open vSwitch Docker image:
+
+```
+docker build -t sd-rsix/ovs:latest containers-src/open-vswitch
+```
+
+### Routers
 ```
 ## Run the following commands in the same directory where this file is.
 

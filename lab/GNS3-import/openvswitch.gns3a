@@ -14,7 +14,7 @@
     "symbol": "ethernet_switch.svg",
     "docker": {
         "adapters": 16,
-        "image": "gns3/openvswitch:latest",
+        "image": "sd-rsix/ovs:latest",
         "environment": "MANAGEMENT_INTERFACE=1"
     }
 }
