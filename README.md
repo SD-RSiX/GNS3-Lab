@@ -75,3 +75,7 @@ ovs-vsctl set-fail-mode br0 standalone
 ## change fail mode to 'secure'
 ovs-vsctl set-fail-mode br0 secure
 ```
+
+## Routers, BGP, and VLANs
+
+In this same folder, there is the file _routers-bgp-vlans.md_ with instructions and configuration examples on how to configure routers and VLANs.
