@@ -1,8 +1,8 @@
 version: '3'
 services:
     ryu:
-        image: "osrg/ryu"
+        build: .
+        container_name: sd-rsix_controller
         ports:
             - "6633:6633"
-        volumes:
-            - .:/src
+        command: ["ryu-manager", "ryu/ryu/app/rsix_app.py"]
