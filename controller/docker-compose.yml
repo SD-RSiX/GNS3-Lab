@@ -1,8 +1,16 @@
 version: '3'
+
 services:
     ryu:
         build: .
         container_name: sd-rsix_controller
         ports:
             - "6633:6633"
+        networks:
+            sd_rsix:
+                ipv4_address: 10.10.10.254
         command: ["ryu-manager", "ryu/ryu/app/rsix_app.py"]
+
+networks:
+    sd_rsix:
+        external: true
