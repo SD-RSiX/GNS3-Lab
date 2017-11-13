@@ -90,21 +90,25 @@ ip as-path access-list 1 permit ^ANS_
 !
 router bgp 26162
 !
- neighbor 200.219.143.XXX remote-as ASN
- neighbor 200.219.143.XXX description === <AS Name> ===
- neighbor 200.219.143.XXX peer-group RSiX-v4
- neighbor 2001:12F8:0:6::<AS Number as Interface ID> remote-as ASN
- neighbor 2001:12F8:0:6::<AS Number as Interface ID> description === <AS Name> ===
- neighbor 2001:12F8:0:6::<AS Number as Interface ID> peer-group RSiX-v6
- !
- address-family ipv4
-  no neighbor 2001:12F8:0:6::<AS Number as Interface ID> activate
-  neighbor 200.219.143.XXX activate
-  exit-address-family
+ neighbor xxx.xxx.xxx.xxx remote-as _ASN_
+ neighbor xxx.xxx.xxx.xxx description === NAME ===
+ neighbor xxx.xxx.xxx.xxx soft-reconfiguration inbound
+ neighbor xxx.xxx.xxx.xxx maximum-prefix 500 restart 10
+ neighbor xxx.xxx.xxx.xxx prefix-list RSiX-v4-prefix-limit in
+ neighbor xxx.xxx.xxx.xxx filter-list RSiX-as-path out
+ neighbor xxx.xxx.xxx.xxx attribute-unchanged as-path next-hop
+ neighbor 2001:12f8:0:6::XX:XXXX remote-as _ASN_
+ neighbor 2001:12f8:0:6::XX:XXXX description === NAME ===
+ no neighbor 2001:12f8:0:6::XX:XXXX activate
  !
  address-family ipv6
-  neighbor 2001:12F8:0:6::<AS Number as Interface ID> activate
-  exit-address-family
+  neighbor 2001:12f8:0:6::XX:XXXX activate
+  neighbor 2001:12f8:0:6::XX:XXXX soft-reconfiguration inbound
+  neighbor 2001:12f8:0:6::XX:XXXX maximum-prefix 100 restart 10
+  neighbor 2001:12f8:0:6::XX:XXXX prefix-list RSiX-v6-prefix-limit in
+  neighbor 2001:12f8:0:6::XX:XXXX filter-list RSiX-as-path out
+  neighbor 2001:12f8:0:6::XX:XXXX attribute-unchanged as-path next-hop
+  exit address-family
  !
   end
 !
