@@ -116,9 +116,9 @@ write memory
 !
 ```
 
-## Peering in ASes Routers
-
 ### Cisco IOS Routers
+
+Before configure BGP, you must have IP (v4 and v6) connectivity to Route-Server
 
 ```
 !
@@ -127,5 +127,57 @@ conf t
 ip routing
 ipv6 unicast-routing
 !
-
+!
+ip route <network> <netmask> Null0 254
+ipv6 route <v6_network>/<mask> Null0 254
+!
+!
+ip prefix-list <ASN>-prefixes permit <network>/<mask> le 28
+ipv6 prefix-list <ASN>-prefixes permit <v6_network>/<mask> le 56
+!
+!
+router bgp <ASN>
+ bgp router-id <Router ID>
+ no bgp enforce-first-as
+ bgp log-neighbor-changes
+ neighbor 2001:12F8:0:6::2:6162 remote-as 26162
+ neighbor 2001:12F8:0:6::2:6162 description === RSiX Route Server ===
+ neighbor 200.219.143.254 remote-as 26162
+ neighbor 200.219.143.254 description === RSiX Route Server ===
+ !
+ address-family ipv4
+  redistribute connected
+  no neighbor 2001:12F8:0:6::2:6162 activate
+  neighbor 200.219.143.254 activate
+  neighbor 200.219.143.254 next-hop-self
+  neighbor 200.219.143.254 soft-reconfiguration inbound
+  neighbor 200.219.143.254 prefix-list <ASN>-prefixes in
+  neighbor 200.219.143.254 prefix-list <ASN>-prefixes out
+  no auto-summary
+  no synchronization
+  !
+  network <network> mask <netmask>
+  !
+  exit-address-family
+ !
+ address-family ipv6
+  neighbor 2001:12F8:0:6::2:6162 activate
+  neighbor 2001:12F8:0:6::2:6162 next-hop-self
+  neighbor 2001:12F8:0:6::2:6162 soft-reconfiguration inbound
+  neighbor 2001:12F8:0:6::2:6162 prefix-list <ASN>-prefixes in
+  neighbor 2001:12F8:0:6::2:6162 prefix-list <ASN>-prefixes out
+  redistribute connected
+  !
+  network <v6_network>/<mask>
+  !
+  exit-address-family
+ !
+ exit
+!
+exit
+!
+write memory
+!
 ```
+
+### Quagga Routers
