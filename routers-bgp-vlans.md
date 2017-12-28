@@ -88,7 +88,7 @@ ipv6 unicast-routing
 The Route Server is a BGP daemon running on a Docker container so that the configuration below, after edited, must be set in the lab/containers-src/route-server/config/bgpd.conf file to make it persistent -- requires route server Docker image rebuilding. For temporary effect (until closing GN3) configuration may be set using CLI.
 
 ```
-ip as-path access-list 1 permit ^_ASN__
+ip as-path access-list RSiX-as-path permit ^_ASN__
 !
 router bgp 26162
 !
