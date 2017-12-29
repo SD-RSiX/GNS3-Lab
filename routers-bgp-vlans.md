@@ -153,7 +153,6 @@ router bgp <ASN>
   neighbor 200.219.143.254 activate
   neighbor 200.219.143.254 next-hop-self
   neighbor 200.219.143.254 soft-reconfiguration inbound
-  neighbor 200.219.143.254 prefix-list <ASN>-prefixes in
   neighbor 200.219.143.254 prefix-list <ASN>-prefixes out
   no auto-summary
   no synchronization
@@ -166,7 +165,6 @@ router bgp <ASN>
   neighbor 2001:12F8:0:6::2:6162 activate
   neighbor 2001:12F8:0:6::2:6162 next-hop-self
   neighbor 2001:12F8:0:6::2:6162 soft-reconfiguration inbound
-  neighbor 2001:12F8:0:6::2:6162 prefix-list <ASN>-prefixes in
   neighbor 2001:12F8:0:6::2:6162 prefix-list <ASN>-prefixes out
   redistribute connected
   !
