@@ -122,6 +122,45 @@ write memory
 
 Before configure BGP, you must have IP (v4 and v6) connectivity to Route-Server
 
+The IOS version in use requires VLANs to be created in the VLAN database. Otherwise, VLAN interfaces will not go up.
+
+```
+# vlan database
+(vlan)# vlan 10 name RSiX-v4
+(vlan)# vlan 20 name RSiX-v6
+(vlan)# exit
+```
+
+Now, configure interfaces as follows:
+
+```
+!
+conf t
+!
+!         
+interface Vlan10
+ description RSiX IPv4 interface
+ ip address <IPv4 address> 255.255.255.0
+!
+interface Vlan20
+ description RSiX IPv6 interface
+ no ip address
+ ipv6 address <IPv6 address>/64
+!
+!
+interface FastEthernet1/0
+ description RSiX
+ switchport trunk allowed vlan 1,10,20,1002-1005
+ switchport mode trunk
+ duplex full
+ speed 100
+!
+```
+
+Use ping to check connectivity with the Route Server (200.219.143.254) - remember the Open vSwitches won't forward packets without a controller unless they have been configured in __standalone mode__ (ovs-vsctl set-fail-mode br0 standalone).
+
+Once there is connectivity, proceed to BGP configuration following the template below:
+
 ```
 !
 conf t
@@ -139,7 +178,7 @@ ipv6 prefix-list <ASN>-prefixes permit <v6_network>/<mask> le 56
 !
 !
 router bgp <ASN>
- bgp router-id <Router ID>
+ bgp router-id <IPv4 address>
  no bgp enforce-first-as
  bgp log-neighbor-changes
  neighbor 2001:12F8:0:6::2:6162 remote-as 26162
