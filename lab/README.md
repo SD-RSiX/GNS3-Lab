@@ -36,7 +36,9 @@ Build one by one running the following commands:
 
 ## Route Server
 docker build -t sd-rsix/route-server:latest containers-src/route-server
-
+##
+## AS2906-b
+docker build -t sd-rsix/as2906-b:latest containers-src/as2906-b
 
 ```
 
