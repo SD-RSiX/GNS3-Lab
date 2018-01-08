@@ -15,39 +15,45 @@ Address blocks in use are:
     * 2001:12F8:0:6::X:XXXX
     * 2001:12F8:0:6::XX:XXXX
 
+The IOS version in use requires VLANs to be created in the VLAN database. Otherwise, VLAN interfaces will not go up.
+
 ```
+# vlan database
+(vlan)# vlan 10 name RSiX-v4
+(vlan)# vlan 20 name RSiX-v6
+(vlan)# exit
+```
+
+Now, configure interfaces as follows:
+
+```
+!
 conf t
 !
-vlan 10
- name RSiX-v4
- exit
-vlan 20
- name RSiX-v6
- exit
-!
+!         
 interface Vlan10
  description RSiX IPv4 interface
- ip address 200.219.143.XXX 255.255.255.0
+ ip address <IPv4 address> 255.255.255.0
 !
 interface Vlan20
  description RSiX IPv6 interface
  no ip address
- ipv6 address 2001:12F8:0:6::<ASN>/64
+ ipv6 address <IPv6 address>/64
+!
 !
 interface FastEthernet1/0
  description RSiX
- switchport
- !!! The IOS used requires VLANs 1, 1002-1005 on each trunk
  switchport trunk allowed vlan 1,10,20,1002-1005
  switchport mode trunk
  duplex full
  speed 100
- no shutdown
- end
-!
-write memory
 !
 ```
+
+Use ping to check connectivity with the Route Server (200.219.143.254) - remember the Open vSwitches won't forward packets without a controller unless they have been configured in __standalone mode__ (ovs-vsctl set-fail-mode br0 standalone).
+
+Once there is connectivity, proceed to BGP configuration.
+
 
 ## Bilateral VLANs
 
@@ -74,7 +80,6 @@ interface FastEthernet1/0
 write memory
 !
 ```
-
 
 # BGP
 
@@ -120,46 +125,9 @@ write memory
 
 ### Cisco IOS Routers
 
-Before configure BGP, you must have IP (v4 and v6) connectivity to Route-Server
+Before configure BGP, you must have IP (v4 and v6) connectivity to Route-Server. You find how to set it up in the section _RSiX VLANs - Production and Quarentine_.
 
-The IOS version in use requires VLANs to be created in the VLAN database. Otherwise, VLAN interfaces will not go up.
-
-```
-# vlan database
-(vlan)# vlan 10 name RSiX-v4
-(vlan)# vlan 20 name RSiX-v6
-(vlan)# exit
-```
-
-Now, configure interfaces as follows:
-
-```
-!
-conf t
-!
-!         
-interface Vlan10
- description RSiX IPv4 interface
- ip address <IPv4 address> 255.255.255.0
-!
-interface Vlan20
- description RSiX IPv6 interface
- no ip address
- ipv6 address <IPv6 address>/64
-!
-!
-interface FastEthernet1/0
- description RSiX
- switchport trunk allowed vlan 1,10,20,1002-1005
- switchport mode trunk
- duplex full
- speed 100
-!
-```
-
-Use ping to check connectivity with the Route Server (200.219.143.254) - remember the Open vSwitches won't forward packets without a controller unless they have been configured in __standalone mode__ (ovs-vsctl set-fail-mode br0 standalone).
-
-Once there is connectivity, proceed to BGP configuration following the template below:
+Once you have IP(4 and 6) connectivity, use the following template to configure BGP.
 
 ```
 !
