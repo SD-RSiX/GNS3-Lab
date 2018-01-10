@@ -1,81 +1,95 @@
-Blah blah blah about the projetc. Not for now.
+# Building the Lab
 
-# Running
+## Requirements
 
-Before to run, you need to build the Lab.
+* [GNS3 1.5+](https://www.gns3.com)
+* [Docker](https://www.docker.com/)
+* [Docker Compose](https://docs.docker.com/compose/)
+* Cisco IOS 3725 version 12.4(15)T7 image
 
-The detailed information and instructions are in the README.md file in the __lab__ folder. After building the Lab, back here to run it following the sections below.
+The Lab is based on GNS3, Docker, [Ryu SDN Controller](https://osrg.github.io/ryu/), [Quagga](http://www.nongnu.org/quagga/), and [Open vSwitch](http://openvswitch.org/). Although you only need to install GNS3, Docker and Docker Compose, because of Ryu, Quagga, and Open vSwitch run in Docker containers. You also need a Cisco IOS 3725 version 12.4(15)T7 (c3725-adventerprisek9-mz124-15) - it requires a license, and we can not provide it, so you need to get it on your own.
 
+## Building Docker images
 
-## GNS3 Lab
+### Open vSwitch
 
-After building the Docker images and importing them to GNS3, importing the Cisco 3725 image (not provided with this project), and configuring and deploying the cloud node to connect to the Docker network, click the __Start (PLAY)__ button. Just that!
+We changed the GNS3 Open vSwitch Docker image in order to set the controller to 10.10.10.254:6633 and the fail mode to secure. With this changes, the switches will not forward packets unless they connect to a controller.
 
-
-## Controller
-
-This project uses the [Ryu SDN Controller](http://osrg.github.io/ryu/) on a Docker container; you may run the controller before or after starting the GNS3 Lab. It uses _docker-compose_ to build the image and run the container. Ryu runs the code in the _src_ folder.
-
-In order to start the controller container, run the following command inside _controller_ folder:
-
-```
-docker-compose up
-```
-
-If you change the code in _src_ folder, you need to deploy de container again. Preferably, always start the container with the command below just in case:
+Run the following command to build Open vSwitch Docker image:
 
 ```
-## Rebuilds the image and starts the controller container
-docker-compose up --build
+docker build -t sd-rsix/ovs:latest containers-src/open-vswitch
 ```
 
-If you want to remove everything created by _docker-compose_, run:
+### Routers
+
+Containers are not supposed to change: they are supposed to be replaced, so the changes you do in a container will be lost when it is destroyed. We could have used volumes to persist configuration changes, but to make them simpler and portable, they do not store anything but the configuration they were built with.
+
+The commands below build all the router containers with the appropriate configuration. You will build them only once unless you want to change some configuration and make it persistent.
+
+Buiding the first container takes a little longer because it downloads the base image, the others build faster.
+
+Build one by one running the following commands:
 
 ```
-# Remove container, network and the image locally generated:
-docker-compose down --rmi local
-```
+## Run the following commands in the same directory where this file is.
 
-
-## OpenFlow switches (Open vSwitch) commands and operating modes
-
-Open vSwitches start when you run the GNS3 Lab by clicking the _play_ button. In order to access the switches' console, once the Lab is running, double-click in any switch.
-
-Follow some useful commands:
+## Route Server
+docker build -t sd-rsix/route-server:latest containers-src/route-server
+##
+## AS2906-b
+docker build -t sd-rsix/as2906-b:latest containers-src/as2906-b
 
 ```
-## List switch's interfaces (physical and bridges)
-ifconfig
 
-## Show information and ports of all bridges
-ovs-vsctl show
 
-## Show br0's ports information in OpenFlow 1.3 and 1.0 versions
-ovs-ofctl -O OpenFlow13 dump-ports br0
-ovs-ofctl -O OpenFlow10 dump-ports br0
+## Importing to GNS3
 
-## Show br0's flow entries in OpenFlow 1.3 and 1.0 versions
-ovs-ofctl -O OpenFlow13 dump-flows br0
-ovs-ofctl -O OpenFlow13 dump-flows br0
-```
+### Importing Docker images to GNS3
 
-### Changing Open vSwitches operating mode
+After building the Docker images, open GNS3 and import all the _.gns3a_ files in the _GNS3-import_ folder (one by one). You may change some options in the importing dialog according to your preferences.
 
-Open vSwitch has two different _fail mode_ configuration:
 
- * __standalone__: in this mode, the switch forwards packets normally regardless it connects or not to a controller. If connected to a controller, the switch processes the packets against flow entries before the normal switching.
- * __secure__: in secure mode, the switch only forwards packets based on flow entries. It does not connect to a controller or if a controller connection goes down the packets will be forwarded based on the existing flow entries until they expire; if the switch can not get any flow entry packets will not be forwarded.
+### Importing Cisco IOS image
 
-The images built for the Lab operate in _secure mode_ by default, but it can be changed running the commands below. Remember that changing the container does not change the image, so if you close GNS3 it removes containers and it will restore them to the original state when it opens the Lab again.
+Open _Preferences_ window by going to _Edit_ > _Preferences_. Select _IOS Routers_ on the left and click _New_ on the right. Follow the dialog, but in the second window check _This is an EthernetSwitch router_, so GNS3 will attach a 16 ports switch module.
+
+### Importing GNS3 project
+
+Download the latest version of the project from [here](https://www.dropbox.com/sh/znb6ckb9d7ymiar/AABazkB_lGZ6T7IR4TXXEcyMa?dl=0) and import to GNS3 through _File_ > _Import portable project_.
+
+
+## Connecting Open vSwitches to the Docker network
+
+At this point, you hare a GNS3 project ready to run. Although, the Open vSwitches need a connection with a Docker network to reach the controller. First, create a Docker network exclusive to this lab running the command below:
 
 ```
-## change fail mode to 'standalone'
-ovs-vsctl set-fail-mode br0 standalone
-
-## change fail mode to 'secure'
-ovs-vsctl set-fail-mode br0 secure
+docker network create --subnet=10.10.10.0/24 --gateway=10.10.10.1 sd_rsix
 ```
 
-## Routers, BGP, and VLANs
+List the Docker networks to get the ID of the network created:
 
-In this same folder, there is the file _routers-bgp-vlans.md_ with instructions and configuration examples on how to configure routers and VLANs.
+```
+$ docker network ls
+NETWORK ID          NAME                DRIVER              SCOPE
+c33df49ae2e1        bridge              bridge              local
+4611cdd66e56        host                host                local
+99686584619c        none                null                local
+eba863006310        sd_rsix             bridge              local    <<-
+```
+
+In the example above, the Network ID of the network __sd_rsix__ is __eba863006310__
+
+In GNS3, go to _Edit_ > _Preferences_; go to _Built-in_ and select _Cloud nodes_ and do the following:
+
+ * Create a new cloud by clicking _new_ and name it as you want and click _Finish_
+ * Select the cloud node you just created and click _Edit_
+ * In the new window, in the _Ethernet interfaces_ tab, check _Show special Ethernet interfaces_, then select the interface of the network __sd_rsix__ by its ID (__br-eba863006310__) and click _Add_
+ * In the _Misc_ tab, it may be convenient to change de _Default name format_ for another name easier to identify when the node is deployed (e.g. Docker-net{0})
+ * Click _OK_ and _OK_.
+
+Back to the project window, add the cloud node you created (You must have given a name to it) to the project and connect it to _Management-SW_. The _Management-SW_ connects all the Open vSwitches through their Eth0 interface (Management interface).
+
+## Ajusting Idle-PC
+
+After importing and starting the Lab, click on any of the Cisco IOS Routers (e.g. Router Server) and select _Auto Idle-PC_ to reduce the burden of the Lab on your computer.
