@@ -1,3 +1,10 @@
+
+It is a network lab designed for SDN approaches for [Internet Exchange Points (IXP)](https://en.wikipedia.org/wiki/Internet_exchange_point) prototyping. This project has been developed in conjunction with [\[SD\]RSiX Controller](https://bitbucket.org/sd-rsix/sd-rsix-controller/overview).
+
+The Lab was based (in a reduced scale) on the [RSiX Internet Exchange (Rio Grande do Sul IXP - Porto Alegre) Infrastructure](http://ix.br/adesao/rs/) and [connected ASes](http://ix.br/particip/rs), and it mirrors the services and configurations in use in Brazilian IXPs.
+
+Without a running controller, the Lab works as well. Check the "_Changing Open vSwitches operating mode_" section below for details.
+
 # Building the Lab
 
 ## Requirements
@@ -93,3 +100,19 @@ Back to the project window, add the cloud node you created (You must have given 
 ## Ajusting Idle-PC
 
 After importing and starting the Lab, click on any of the Cisco IOS Routers (e.g. Router Server) and select _Auto Idle-PC_ to reduce the burden of the Lab on your computer.
+
+## Changing Open vSwitches operating mode
+
+Open vSwitch has two different _fail mode_ configuration:
+
+ * __standalone__: in this mode, the switch forwards packets normally regardless it connects or not to a controller. If connected to a controller, the switch processes the packets against flow entries before the normal switching.
+ * __secure__: in secure mode, the switch only forwards packets based on flow entries. It does not connect to a controller or if a controller connection goes down the packets will be forwarded based on the existing flow entries until they expire; if the switch can not get any flow entry packets will not be forwarded.
+
+The images built for the Lab operate in _secure mode_ by default, but it can be changed running the commands below. Remember that changing the container does not change the image, so if you close GNS3 it removes containers and it will restore them to the original state when it opens the Lab again.
+
+```
+## change fail mode to 'standalone'
+ovs-vsctl set-fail-mode br0 standalone
+
+## change fail mode to 'secure'
+ovs-vsctl set-fail-mode br0 secure
