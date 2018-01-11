@@ -5,18 +5,22 @@ The Lab was based (in a reduced scale) on the [RSiX Internet Exchange (Rio Grand
 
 Without a running controller, the Lab works as well. Check the "_Changing Open vSwitches operating mode_" section below for details.
 
-# Building the Lab
 
-## Requirements
+# Requirements
 
 * [GNS3 1.5+](https://www.gns3.com)
 * [Docker](https://www.docker.com/)
 * [Docker Compose](https://docs.docker.com/compose/)
 * Cisco IOS 3725 version 12.4(15)T7 image
 
-The Lab is based on GNS3, Docker, [Ryu SDN Controller](https://osrg.github.io/ryu/), [Quagga](http://www.nongnu.org/quagga/), and [Open vSwitch](http://openvswitch.org/). Although you only need to install GNS3, Docker and Docker Compose, because of Ryu, Quagga, and Open vSwitch run in Docker containers. You also need a Cisco IOS 3725 version 12.4(15)T7 (c3725-adventerprisek9-mz124-15) - it requires a license, and we can not provide it, so you need to get it on your own.
+The Lab is based on GNS3, Docker, [Quagga](http://www.nongnu.org/quagga/), and [Open vSwitch](http://openvswitch.org/). Although you only need to install GNS3, Docker and Docker Compose, because of Ryu, Quagga, and Open vSwitch run in Docker containers. You also need a Cisco IOS 3725 version 12.4(15)T7 (c3725-adventerprisek9-mz124-15) - it requires a license, and we can not provide it, so you need to get it on your own.
 
-## Building Docker images
+
+# Building the Lab
+
+## Docker images
+
+We used routers and switches running on Docker in order to reduce the Lab's burden on personal computers. This section covers how to build the images we will import ahead into GNS3.
 
 ### Open vSwitch
 
@@ -30,13 +34,13 @@ docker build -t sd-rsix/ovs:latest containers-src/open-vswitch
 
 ### Routers
 
-Containers are not supposed to change: they are supposed to be replaced, so the changes you do in a container will be lost when it is destroyed. We could have used volumes to persist configuration changes, but to make them simpler and portable, they do not store anything but the configuration they were built with.
+Containers are not supposed to change: they are supposed to be replaced, so the changes you do in a container will be lost when the container is destroyed (closing GNS3, for example). We could have used volumes to persist container's configuration changes, but to make them simpler and portable, they do not store anything but the configuration they were built with.
 
 The commands below build all the router containers with the appropriate configuration. You will build them only once unless you want to change some configuration and make it persistent.
 
-Buiding the first container takes a little longer because it downloads the base image, the others build faster.
+Buiding the first container takes a little longer because it downloads the base image.
 
-Build one by one running the following commands:
+Build one by one running the following Docker commands:
 
 ```
 ## Run the following commands in the same directory where this file is.
@@ -46,20 +50,20 @@ docker build -t sd-rsix/route-server:latest containers-src/route-server
 ##
 ## AS2906-b
 docker build -t sd-rsix/as2906-b:latest containers-src/as2906-b
-
 ```
 
 
-## Importing to GNS3
+## GNS3
+
+This document does not cover GNS3 installation. The sections below cover how to import Docker and IOS into GNS3.
 
 ### Importing Docker images to GNS3
 
 After building the Docker images, open GNS3 and import all the _.gns3a_ files in the _GNS3-import_ folder (one by one). You may change some options in the importing dialog according to your preferences.
 
-
 ### Importing Cisco IOS image
 
-Open _Preferences_ window by going to _Edit_ > _Preferences_. Select _IOS Routers_ on the left and click _New_ on the right. Follow the dialog, but in the second window check _This is an EthernetSwitch router_, so GNS3 will attach a 16 ports switch module.
+Open _Preferences_ window by going to _Edit_ > _Preferences_, select _IOS Routers_ on the left and click _New_, on the right. Follow the dialog, but in the second window check _This is an EthernetSwitch router_, so GNS3 will attach a 16 ports switch module.
 
 ### Importing GNS3 project
 
@@ -68,13 +72,15 @@ Download the latest version of the project from [here](https://www.dropbox.com/s
 
 ## Connecting Open vSwitches to the Docker network
 
-At this point, you hare a GNS3 project ready to run. Although, the Open vSwitches need a connection with a Docker network to reach the controller. First, create a Docker network exclusive to this lab running the command below:
+At this point, you have a GNS3 project ready to run. Although, the Open vSwitches need a connection with a Docker network to reach the controller.
+
+First, create a Docker network exclusive to this lab running the command below:
 
 ```
 docker network create --subnet=10.10.10.0/24 --gateway=10.10.10.1 sd_rsix
 ```
 
-List the Docker networks to get the ID of the network created:
+List the Docker networks to get the ID of the network you just created:
 
 ```
 $ docker network ls
@@ -97,11 +103,12 @@ In GNS3, go to _Edit_ > _Preferences_; go to _Built-in_ and select _Cloud nodes_
 
 Back to the project window, add the cloud node you created (You must have given a name to it) to the project and connect it to _Management-SW_. The _Management-SW_ connects all the Open vSwitches through their Eth0 interface (Management interface).
 
-## Ajusting Idle-PC
+## Ajusting Idle-PC (Reduce processing)
 
 After importing and starting the Lab, click on any of the Cisco IOS Routers (e.g. Router Server) and select _Auto Idle-PC_ to reduce the burden of the Lab on your computer.
 
-## Changing Open vSwitches operating mode
+
+# Changing Open vSwitches operating mode
 
 Open vSwitch has two different _fail mode_ configuration:
 
@@ -116,3 +123,9 @@ ovs-vsctl set-fail-mode br0 standalone
 
 ## change fail mode to 'secure'
 ovs-vsctl set-fail-mode br0 secure
+```
+
+
+# Rebuilding a Docker-based Router
+
+If you pulled this repository and it changed the configuration files of the routers (files inside 'containers-src' folder), or you changed it manually, you need to rebuild the image to get the newer version running.
